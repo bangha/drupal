@@ -47,13 +47,15 @@ function current_posts_block_info() {
     //Get all posts from one week ago to the present.
     $end_time = time();
     
+    //New line
+    $max_num = variable_get('current_posts_max', 3);
     //Use Database API to retrieve current posts
     $query = db_select('node', 'n')
             ->fields('n', array('nid', 'title', 'created'))
             ->condition('status', 1) //Published
             ->condition('created', array($start_time, $end_time), 'BETWEEN')
             ->orderBy('created', 'DESC') //Most recent first.
-            ->range(0,10) //LIMIT to 10 records
+            ->range(0, $max_num) //LIMIT to 10 records
             ->execute();
     return $query;
  }
@@ -83,7 +85,97 @@ function current_posts_block_view($delta = '') {
           $block['content'] = theme('item_list', array(
             'items' => $items));
         }
-      }
+    }
     return $block;
-  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function current_posts_menu(){
+    $items = array();
+    
+    $items['admin/config/content/current_posts'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => 'Current posts',
+        'description' => 'Configuration for Current posts module',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('current_posts_form'),
+        'access arguments' => array('access adminstration pages'),
+    );
+    
+    $items['current_posts'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => 'Current posts',
+        'page callback' => '_current_posts_page',
+        'access arguments' => array('access current_posts content')
+    );
+    
+    return $items;
+}
+
+/**
+ * Page callback: Curent posts settings
+ * 
+ * @see current_post_menu()
+ */
+ function current_posts_form($form, &$form_state){
+    $form['current_posts_max'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Maximun number of posts'),
+        '#default_value' => variable_get('current_posts_max', 3),
+        '#size' => 2,
+        '#maxlength' => 2,
+        '#description' => t('The maxinum number of links to display in the block.'),
+        '#required' => true,
+    );
+    
+    return system_settings_form($form);
+ }
+ 
+ /**
+  * Implements validation from the Form API
+  * 
+  * @param $form
+  * @param $form_state
+  */
+ function current_posts_form_validate($form, &$form_state){
+    $max_num = $form_state['values']['current_posts_max'];
+    if(!is_numeric($max_num)){
+        form_set_error('current_posts_max', t('You must enter a number for the maximum be positive.'));
+    }
+    else if($max_num <= 0){
+        form_set_error('current_posts_max', t('Maximum number of posts to display must be positive'));
+    }
+ }
+ 
+ /**
+  * Implements hook_permission().
+  */
+ function current_posts_permission(){
+    return array(
+        'access current_posts content' => array(
+            'title' => t('Access content for the Current posts module.')
+        )
+    );
+ }
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 ?>
