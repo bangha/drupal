@@ -1,0 +1,70 @@
+<?php
+/**
+* Display all the table node in page
+*/
+
+/**
+* Implements hook_menu()
+*/
+function show_table_menu(){
+    $items['show_table'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Show table'),
+        'page callback' => 'show_table_content',
+        'access arguments' => array('access show_table content')
+    );
+    return $items;
+}
+
+function show_table_content(){
+    $header = array(
+        array(
+            'data' => t('ID'),
+            'filed' => 'n.nid'
+        ),
+        array(
+            'data' => t('Title'),
+            'field' => 'n.title'
+        ),
+        array(
+            'data' => t('Type'),
+            'field' => 'n.type'
+        )
+    );
+    $query = db_select('node', 'n')->extend('TableSort');
+    $query->fields('n', array('nid', 'title', 'type'));
+    
+    $result = $query->orderByHeader($header)->execute();
+    
+    $rows = array();
+    
+    foreach($result as $row){
+        $rows[] = array('data' => (array) $row);
+        //$rows[] = array('data' => l($row->title, 'node/'. $row->nid));
+    }
+    $build['show_table'] = array(
+        '#theme' =>'table',
+        '#header' => $header,
+        '#rows' => $rows
+        );
+
+    return $build;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

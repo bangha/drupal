@@ -1,0 +1,5 @@
+name = "Show Table"
+package = "Customs"
+description = "Display all the table node"
+core = "7.x"
+version = "1.0-dev"

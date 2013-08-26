@@ -1,0 +1,5 @@
+name = "IP"
+package = "Customs"
+description = "Show My IP"
+core = "7.x"
+version = "1.x-dev"

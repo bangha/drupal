@@ -1,0 +1,26 @@
+<?php
+/**
+* @file
+* An example module for how to create a module tutorial.
+*/
+
+/**
+* Imlements hook_block_info.
+*/
+function ip_block_info(){
+    $blocks['ip'] = array('info' => t('Show MyIP'));
+    return $blocks;
+}
+
+/**
+* Imlements hook_block_view.
+*/
+function ip_block_view($delta = ''){
+    global $user;
+    $block['content'] = t('Hello @user form IP @host', array(
+        '@user' => format_username($user),
+        '@host' => $user->hostname
+    ));
+    return $block;
+}
+?>
