@@ -39,16 +39,100 @@ function d2t_contact_menu(){
     $items['contact'] = array(
         'title' => t('Contact About'),
         'type' => MENU_NORMAL_ITEM,
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('contact_about_form'),
-        'access arguments' => array('access adminstration pages'),
+        'page callback' => 'd2t_contact_page',
+        'access arguments' => array('access d2t_contact content'),
     );
     
     return $items;
 }
 
-function contact_about_form($form, &$form_state){
-    $form['email'] = array(
-        'title' => t('Email'),
+function d2t_contact_form(){
+    $header = array(
+        'email' => array('data' => t('Email')),
+        'title' => array('data' => t('Title')),
+        'content' => array('data' => t('Content')),
     );
+    
+    $data = db_select('d2t_contact', 'c')->fields('c')->range(0, 10)->orderBy('cid', 'DESC')->execute()->fetchAll();
+    //dvm($data);
+    
+    foreach($data as $list){
+        $options[] = array(
+            'email' => $list->email,
+            'title' => $list->title,
+            'content' => $list->content,
+        );
+        
+    }
+    //dvm($options);
+    $form['table_content'] = array(
+        '#type' => 'tableselect',
+        '#header' => $header,
+        '#options' => $options,
+        '#empty' => t('No content available.'),
+    );
+    return $form;
 }
+
+function d2t_contact_page(){
+    return drupal_get_form('d2t_contact_page_form');
+}
+function d2t_contact_page_form($form, &$form_state){
+    $form['email'] = array(
+        '#title' => t('Email'),
+        '#type' => 'textfield',
+    );
+    $form['title'] = array(
+        '#title' => t('Title'),
+        '#type' => 'textfield',
+    );
+    $form['content'] = array(
+        '#title' => t('Content'),
+        '#type' => 'textarea',
+    );
+    $form['submit'] = array(
+        '#value' => t('Submit'),
+        '#type' => 'submit',
+    );
+    return $form;
+}
+function d2t_contact_page_form_validate($form, &$form_state){
+    $email = $form_state['values']['email'];
+    if(!valid_email_address($email)){
+        form_set_error('email', t('The email address appears to be invalid.'));
+    }
+    
+    $title = $form_state['values']['title'];
+    if($title == null){
+        form_set_error('title', t('The title not null'));
+    }
+    
+    $content = $form_state['values']['content'];
+    if($content == null){
+        form_set_error('content', t('The content not null'));
+    }
+}
+function d2t_contact_page_form_submit($form, &$form_state) {
+    db_insert('d2t_contact')->fields(array(
+        'email' => $form_state['values']['email'],
+        'title' => $form_state['values']['title'],
+        'content'=> $form_state['values']['content'],
+    ))->execute();
+    drupal_set_message(t('Submitting values: @values', array('@values' => var_export($form_state['values'], TRUE))));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

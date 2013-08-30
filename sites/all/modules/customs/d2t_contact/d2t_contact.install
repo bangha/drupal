@@ -18,21 +18,21 @@ function d2t_contact_schema(){
             'cid' => array(
                 'type'          => 'serial',
                 'unsigned'      => TRUE,
-                'no null'       => TRUE,
+                'not null'       => TRUE,
             ),
             'email'  => array(
                 'type'          => 'varchar',
                 'length'        => 200,
-                'no null'       => TRUE,                
+                'not null'       => TRUE,                
             ),
             'title' => array(
                 'type' => 'varchar',
                 'length' => 255,
-                'no null' => true,
+                'not null' => true,
             ),
             'content' => array(
                 'type' => 'text',
-                'no null' => TRUE,
+                'not null' => TRUE,
             ),
         ),
         'primary key' => array('cid'),        
@@ -40,6 +40,6 @@ function d2t_contact_schema(){
     return $schema;
 }
 
-function d2t_contact_update_6001() {
-  drupal_install_schema('d2t_contact');
-}
+//function d2t_contact_update_7101() {
+//  drupal_install_schema('d2t_contact');
+//}
