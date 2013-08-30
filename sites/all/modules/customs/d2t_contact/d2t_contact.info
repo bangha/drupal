@@ -1,0 +1,7 @@
+name = "Contact form"
+description = "Form contact"
+package = "Customs"
+core = "7.x"
+version = "1.0-dev"
+
+;files[] = d2t_contact.core.inc

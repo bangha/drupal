@@ -1,0 +1,54 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_contact_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_contact":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_contact_permission(){
+    return array(
+        'access d2t_contact content' => array(
+            'title' => t('Access content for the contact module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_contact_menu(){
+    $items['admin/config/content/d2t_contact'] = array(
+        'title' => t('Contact form'),
+        'type'  => MENU_NORMAL_ITEM,
+        'description' => t('About form contact'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('d2t_contact_form'),
+        'access arguments' => array('access adminstration pages'),
+    );
+    
+    $items['contact'] = array(
+        'title' => t('Contact About'),
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('contact_about_form'),
+        'access arguments' => array('access adminstration pages'),
+    );
+    
+    return $items;
+}
+
+function contact_about_form($form, &$form_state){
+    $form['email'] = array(
+        'title' => t('Email'),
+    );
+}

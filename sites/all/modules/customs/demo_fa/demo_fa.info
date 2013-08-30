@@ -1,0 +1,5 @@
+name = "Demo FA"
+package = "Customs"
+description = "Demo hook form alter"
+core = "7.x"
+version = "1.0-dev"

@@ -1,0 +1,45 @@
+<?php
+
+/**
+* Implements hook_uninstall()
+*/
+function d2t_contact_uninstall(){
+    drupal_uninstall_schema('d2t_contact');
+}
+
+/**
+* Implements hook_schema()
+*/
+function d2t_contact_schema(){
+    $schema = array();
+    $schema['d2t_contact'] = array(
+        'description' => 'The table for contact form',
+        'fields'    => array(
+            'cid' => array(
+                'type'          => 'serial',
+                'unsigned'      => TRUE,
+                'no null'       => TRUE,
+            ),
+            'email'  => array(
+                'type'          => 'varchar',
+                'length'        => 200,
+                'no null'       => TRUE,                
+            ),
+            'title' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'no null' => true,
+            ),
+            'content' => array(
+                'type' => 'text',
+                'no null' => TRUE,
+            ),
+        ),
+        'primary key' => array('cid'),        
+    );
+    return $schema;
+}
+
+function d2t_contact_update_6001() {
+  drupal_install_schema('d2t_contact');
+}

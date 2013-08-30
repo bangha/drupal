@@ -1,0 +1,36 @@
+<?php
+/**
+ * Implementation of hook_form_alter()
+ */
+function demo_fa_form_alter(&$form, &$form_state, $form_id){
+  //dvm($form_id);
+  // target a single form
+  if($form_id == "options_table_form"){
+    $form['check_type']['#title'] = t('hook_form_alter');
+    $form['demo_form_alter'] = array(
+        '#markup' => '<span>hook_form_alter() </span>',
+    );
+  }
+}
+
+/**
+* Implementation of hook_form_FORM_ID_alter()
+* FORM_ID is "options_table_form"
+*/
+function demo_fa_form_options_table_form_alter(&$form, &$form_state, $form_id){
+    //$form['check_type']['#title'] = t('hook_form_FORM_ID_alter');
+    $form['demo_fa'] = array(
+        '#markup' => '<span>hook_form_FORM_ID_alter()</span>',
+    );
+}
+
+/**
+* Implementation of hook_form_BASE_FORM_ID_alter()
+* FORM_ID is "options_table_form"
+*/
+function demo_fa_form_node_form_alter(&$form, &$form_state, $form_id) {
+  $content_type = $form['#node']->type;
+  if ($content_type == 'article') {
+    $form['title']['#title'] = 'Title da sua lai';
+  }
+}
