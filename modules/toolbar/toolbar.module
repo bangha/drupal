@@ -239,7 +239,6 @@ function toolbar_view() {
     '#links' => $links,
     '#attributes' => array('id' => 'toolbar-user'),
   );
-
   // Add a "home" link.
   $link = array(
     'home' => array(

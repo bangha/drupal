@@ -1,0 +1,236 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_multistep_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_multistep":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_multistep_permission(){
+    return array(
+        'access d2t_multistep content' => array(
+            'title' => t('Access content for the multistep module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_multistep_menu(){
+    
+    $items['d2t_multistep'] = array(
+        'title' => t('Multistep form'),
+        'type' => MENU_NORMAL_ITEM,
+        //'page callback' => 'd2t_multistep_page',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('ajax_form_multistep_form'),
+        'access arguments' => array('access d2t_multistep content'),
+    );
+    
+    return $items;
+}
+
+function ajax_form_multistep_form($form, &$form_state){
+
+	$form_state['step'] = isset($form_state['step']) ? $form_state['step'] : 1;
+ 
+	$form['#prefix'] = '<div id="ajax_form_multistep_form">';
+	$form['#suffix'] = '</div>';
+ 
+	switch($form_state['step'])
+    {
+		// Step 1
+		case 1:
+			$default_value = '';
+			if(isset($form_state['values']['step1']))
+			{
+				$default_value = $form_state['values']['step1'];
+			}
+			elseif(isset($form_state['storage']['step1']))
+			{
+				$default_value = $form_state['storage']['step1'];
+			}
+ 
+			$form['step1'] = array
+			(
+				'#type' => 'textfield',
+				'#title' => t('First Name'),
+				'#required' => TRUE,
+				'#default_value' => $default_value,
+			);
+			break;
+ 
+		// Step 2
+		case 2:
+			$default_value = '';
+			if(isset($form_state['values']['step2']))
+			{
+				$default_value = $form_state['values']['step2'];
+			}
+			elseif(isset($form_state['storage']['step2']))
+			{
+				$default_value = $form_state['storage']['step2'];
+			}
+ 
+			$form['step2'] = array
+			(
+				'#type' => 'textfield',
+				'#title' => t('Last Name'),
+				'#required' => TRUE,
+				'#default_value' => $default_value,
+			);
+ 
+			break;
+ 
+		// Step 3
+		case 3:
+			$default_value = '';
+			if(isset($form_state['values']['step3']))
+			{
+				$default_value = $form_state['values']['step3'];
+			}
+			elseif(isset($form_state['storage']['step3']))
+			{
+				$default_value = $form_state['storage']['step3'];
+			}
+ 
+			$form['step3'] = array
+			(
+				'#type' => 'textfield',
+				'#title' => t('Full Name'),
+				'#required' => TRUE,
+				'#default_value' => $default_value,
+			);
+ 
+			break;
+	}
+ 
+	$form['buttons'] = array
+	(
+		'#type' => 'container',
+	);
+	
+	if($form_state['step'] !== 1)
+	{
+		$form['buttons']['back'] = array
+		(
+			'#type' => 'submit',
+			'#value' => t('Back'),
+			'#limit_validation_errors' => array(),
+			'#submit' => array('ajax_form_multistep_form_back_submit'),
+			'#ajax' => array
+			(
+				'wrapper' => 'ajax_form_multistep_form',
+				'callback' => 'ajax_form_multistep_form_ajax_callback',
+			),
+		);
+	}
+	if($form_state['step'] !== 3)
+	{
+		$form['buttons']['forward'] = array
+		(
+			'#type' => 'submit',
+			'#value' => t('Next'),
+			'#ajax' => array
+			(
+				'wrapper' => 'ajax_form_multistep_form',
+				'callback' => 'ajax_form_multistep_form_ajax_callback',
+			),
+		);
+	}
+	else
+	{
+		$form['buttons']['submit'] = array
+		(
+			'#type' => 'submit',
+			'#value' => t('Submit'),
+			'#ajax' => array
+			(
+				'wrapper' => 'ajax_form_multistep_form',
+				'callback' => 'ajax_form_multistep_form_ajax_callback',
+			),
+		);
+	}
+ 
+	return $form;
+}
+ 
+function ajax_form_multistep_form_validate($form, &$form_state)
+{
+	switch($form_state['step'])
+	{
+		case "1":
+			
+			if($form_state['values']['step1'] == '')
+			{
+				form_set_error('step1', t('Not Null'));
+			}
+ 
+			break;
+ 
+		case "2":
+			
+			if($form_state['values']['step2'] == '')
+			{
+				form_set_error('step2', t('Not Null'));
+			}
+ 
+			break;			
+ 
+		case "3":
+			
+			if($form_state['values']['step3'] == '')
+			{
+				form_set_error('step3', t('Not null'));
+			}
+ 
+			break;
+ 
+	}
+}
+ 
+function ajax_form_multistep_form_back_submit($form, &$form_state)
+{
+	$form_state['step']--;
+ 
+	$form_state['rebuild'] = TRUE;
+}
+ 
+function ajax_form_multistep_form_submit($form, &$form_state)
+{
+	
+	$step = $form_state['step'];
+	$form_state['storage']['step' . $step] = $form_state['values']['step' . $step];
+ 
+	if(isset($form_state['values']['forward']))
+	{
+		
+		$form_state['step']++;
+	}
+	elseif(isset($form_state['values']['submit']))
+	{
+
+		$items = array($form_state['storage']['step1'], $form_state['storage']['step2'], $form_state['storage']['step3']);
+		drupal_set_message(t('You submitted the following values:!values', array('!values' => theme('item_list', array('items' => $items)))));
+ 
+		$form_state['step'] = 1;
+		$form_state['storage'] = array();
+	}
+ 	dvm($form_state['storage']);
+	$form_state['rebuild'] = TRUE;
+}
+ 
+function ajax_form_multistep_form_ajax_callback($form, &$form_state)
+{
+	return $form;
+}

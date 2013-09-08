@@ -1,0 +1,5 @@
+name = "Command Ajax"
+description = "Form ajax commend"
+package = "Customs"
+core = "7.x"
+version = "1.0-1.1"

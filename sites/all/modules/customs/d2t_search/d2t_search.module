@@ -1,0 +1,98 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_search_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_search":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_search_permission(){
+    return array(
+        'access d2t_search content' => array(
+            'title' => t('Access search for the contact module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_search_menu(){
+
+    $items['d2t_search'] = array(
+        'title' => t('Form search ajax'),
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'd2t_search_page',
+        'access arguments' => array('access d2t_search content'),
+    );
+    
+    return $items;
+}
+
+function d2t_search_page(){
+    return drupal_get_form('d2t_search_page_form');
+}
+
+function d2t_search_page_form($form, &$form_state){
+    $form['wrapper'] = array(
+        '#markup' => "<div class='inline-messages'></div>",
+    );
+    $form['name'] = array(
+        '#title' => t('Name'),
+        '#type' => 'textfield',
+        '#required' => true,
+    );
+
+    $form['submit'] = array(
+        '#value' => t('Submit'),
+        '#type' => 'submit',
+        '#ajax' => array(
+            'callback' => 'd2t_search_page_form_callback',
+            'wrapper' => 'd2t-search-page-form',
+            'effect' => 'fade'
+        ),
+    );
+    return $form;
+}
+
+function d2t_search_page_form_callback($form, &$form_state){
+    $messages = theme('status_messages');
+    if($messages){
+        $form['wrapper'] = array(
+            "#markup" => "<div class='inline-messages'>$messages</div>",
+        );
+    }
+
+    return $form;
+}
+
+function d2t_search_page_form_validate($form, &$form_state){
+    if ($form_state['values']['name'] == '') {
+        form_set_error('', t('Name field is empty!'));
+    }
+}
+function d2t_search_page_form_submit($form, &$form_state) {
+    drupal_set_message(t('Your form has been saved.'));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

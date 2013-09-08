@@ -1,0 +1,125 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_theming_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_theming":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_theming_permission(){
+    return array(
+        'access d2t_theming content' => array(
+            'title' => t('Access search for the contact module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_theming_menu(){
+
+    $items['d2t_theming'] = array(
+        'title' => t('Theming'),
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'd2t_theming_page',
+        'access arguments' => array('access d2t_theming content'),
+    );
+    
+    return $items;
+}
+
+function d2t_theming_theme(){
+  return array(
+    'd2t_theming_list_apha' => array(
+      'variables'  => array(
+        'title' => NULL,
+        'items' => NULL,
+      ),
+    ),
+  );
+}
+
+function d2t_theming_page(){
+  //User globals
+  global $user;
+  global $databases;
+  global $base_path;
+  global $base_root;
+  global $conf;
+  global $base_theme_info;
+  global $base_url;
+  global $element;
+  global $theme_path;
+
+  //dvm(user_load($user->uid));
+
+  $items = array(
+    t('First item'),
+    t('Second item'),
+    t('Third item'),
+    t('Fourth item'),    
+  );
+
+  $build['render_version'] = array(
+    '#theme' => 'item_list',
+    '#items' => $items,
+  );
+
+  $build['list_apha'] = array(
+    '#theme' => 'd2t_theming_list_apha',
+    '#items' => $items,
+  );
+
+  return $build;
+}
+
+function theme_d2t_theming_list_apha($variables) {
+ $title = $variables['title'];
+  $items = $variables['items'];
+
+  $variables = array(
+    'items'      => $items,
+    'title'      => $title,
+    'type'       => 'ol',
+    'attributes' => array('class' => 'theming-example-list'),
+  );
+  $output = theme('item_list', $variables);
+  return $output;
+}
+
+function d2t_theming_preprocess_toolbar(&$variables){
+  
+   $user_fields = user_load($variables['user']->uid);
+   $first_name = $user_fields->field_first_name['und']['0']['value'];
+   $last_name = $user_fields->field_last_name['und']['0']['value'];
+   $full_name = $first_name.' '.$last_name;
+
+   $variables['toolbar']['toolbar_user']['#links']['account']['title'] = 'Hello '.$full_name;
+
+   //dvm($variables['toolbar']['toolbar_user']);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

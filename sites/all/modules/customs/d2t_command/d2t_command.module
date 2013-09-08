@@ -1,0 +1,117 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_command_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_command":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_command_permission(){
+    return array(
+        'access d2t_command content' => array(
+            'title' => t('Access search for the contact module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_command_menu(){
+
+    $items['d2t_command'] = array(
+        'title' => t('Form command ajax'),
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('d2t_command_form'),
+        'access arguments' => array('access d2t_command content'),
+    );
+    
+    return $items;
+}
+
+function d2t_command_form($form, &$form_state){
+    
+    //ajax_command_after()
+    $form['fieldset1'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('This show the ajax_command_after()')
+    );
+    $form['fieldset1']['after_command'] = array(
+      '#value' => t('click to put something after the div'),
+      '#type' => 'submit',
+      '#ajax' => array(
+            'callback' => 'd2t_command_form_after_callback',
+      ),
+      '#suffix' => "<div id='after_div'>Something can be inserted after this</div>
+                  <div id='after_status'>'After' Command Status: Unknown</div>",
+    );
+    
+    //ajax_command_alert()
+    $form['fieldset2'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('ajax_command_alert()'),
+    );
+    $form['fieldset2']['alert_command'] = array(
+        '#type' => 'submit',
+        '#value' => t('Click to alert'),
+        '#ajax' => array(
+            'callback' => 'd2t_command_form_alert_callback',
+        ),
+    );
+    
+    return $form;
+}
+
+/**
+ * 'after' callback.
+ *
+ * @see ajax_command_after()
+ */
+ function d2t_command_form_after_callback($form, &$form_state){
+    $selector = '#after_div';
+    
+    $commands = array();
+    $commands[] = ajax_command_after($selector, "New 'after'...");
+    $commands[] = ajax_command_replace("#after_status", "<div id='after_status'>Updated after_command " . date('r') . "</div>");
+    return array('#type' => 'ajax', '#commands' => $commands);
+ }
+
+/**
+ * 'alert' callback.
+ *
+ * @see ajax_command_alert()
+ */
+function d2t_command_form_alert_callback($form, $form_state) {
+  $commands = array();
+  $commands[] = ajax_command_alert("Alert requested at " . date('r'));
+  $commands[] = ajax_command_remove('#edit-alert-command');
+  return array('#type' => 'ajax', '#commands' => $commands);
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+name = "Car Entity"
+description = "Entity Demo D2T"
+package = "Customs"
+core = "7.x"
+version = "1.0"
+files[] = "d2t_car.entity.inc"

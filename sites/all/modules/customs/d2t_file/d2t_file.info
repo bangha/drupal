@@ -1,0 +1,5 @@
+name = "File Upload"
+description = "File in Drupal 7"
+package = "Customs"
+core = "7.x"
+version = "1.0-dev"

@@ -1,0 +1,136 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_file_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_file":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_file_permission(){
+    return array(
+        'access d2t_file content' => array(
+            'title' => t('Access search for the file module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu
+*/
+
+function d2t_file_menu(){
+
+    $items['d2t_file'] = array(
+        'title' => t('File Upload'),
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('d2t_file_form'),
+        'access arguments' => array('access d2t_file content'),
+    );
+    
+    return $items;
+}
+
+//function d2t_file_page_readwrite($form, &$form_state){
+function d2t_file_form($form, &$form_state){
+
+    $form['fieldset1'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Upload use type file'),
+    );
+        $form['fieldset1']['image_file'] = array(
+            '#type' => 'file',
+        );
+        $form['fieldset1']['image_submit'] = array(
+            '#type' => 'submit',
+            '#value' => t('Upload'),
+            '#ajax' => array(
+                'callback' => 'd2t_file_form_fieldset1_callback',
+            ),
+        );
+        
+    $form['fieldset2'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Upload use type managed_file'),
+    );
+        $form['fieldset2']['image_upload'] = array(
+            '#type' => 'managed_file',
+            '#upload_location' => 'public://image_example_images/',
+        );
+        $form['fieldset2']['image_submit'] = array(
+            '#type' => 'submit',
+            '#value' => t('Submit'),
+            '#ajax' => array(
+                'callback' => 'd2t_file_form_fieldset2_callback',
+            ),
+        );
+        
+    return $form;
+}
+
+function d2t_file_form_fieldset1_callback($form, &$form_state){
+   $file = file_save_upload('image_file', array('file_validate_extensions' => array('png gif jpg jpeg')), "public://image_example_images/", $replace = FILE_EXISTS_REPLACE);
+    if ($file){
+        $file->status=FILE_STATUS_PERMANENT;
+        file_save($file);
+        $selector = '#edit-fieldset1 .fieldset-wrapper';
+    
+        $commands = array();
+        $html = '<img src="sites/default/files/image_example_images/'.$file->filename.'" height="250" width="250" />';
+        $commands[] = ajax_command_prepend($selector, $html);
+        return array('#type' => 'ajax', '#commands' => $commands);
+    }
+}
+
+function d2t_file_form_fieldset2_callback($form, &$form_state){
+    $file = file_load($form_state['values']['image_upload']);
+    // Change status to permanent.
+    $file->status = FILE_STATUS_PERMANENT;
+    // Save.
+    file_save($file);
+    $selector = '#edit-fieldset2 .fieldset-wrapper';
+    
+    $commands = array();
+    $html = '<img src="sites/default/files/image_example_images/'.$file->filename.'" height="250" width="250" />';
+    $commands[] = ajax_command_prepend($selector, $html);
+    return array('#type' => 'ajax', '#commands' => $commands);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

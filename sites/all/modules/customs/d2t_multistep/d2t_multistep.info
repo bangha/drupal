@@ -1,0 +1,5 @@
+name = "Multistep form"
+description = "Multistep form ajax"
+package = "Customs"
+core = "7.x"
+version = "1.0-1.0"

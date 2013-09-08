@@ -1,0 +1,75 @@
+<?php
+/**
+* Implements hook_help()
+*/
+function d2t_car_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_car":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+} 
+
+/**
+* Implements hook_permission()
+*/
+
+function d2t_car_permission(){
+    return array(
+        'access d2t_car content' => array(
+            'title' => t('Access content for the car module'),
+        )
+    );
+}
+
+/**
+* Implements hook_menu()
+*/
+
+function d2t_car_menu(){
+    $items['admin/config/content/d2t_car'] = array(
+        'title' => t('Car Entity'),
+        'type'  => MENU_NORMAL_ITEM,
+        'description' => t('Car entity'),
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('d2t_car_form'),
+        'access arguments' => array('access adminstration pages'),
+    );
+    
+    return $items;
+}
+
+function d2t_car_form(){}
+
+function d2t_car_entity_info(){
+    return array(
+        'd2t_car' => array(
+            'label'            => t('Car Entity'),
+            'entity class'     => 'D2TCar',
+            'controller class' => 'EntityAPIController',
+            'module'           => 'd2t_car',
+            'base table'       => 'd2t_car',
+            'fieldable'        => FALSE,
+            'entity keys'      => array(
+                'id'    => 'cid',
+                'name' => 'name'
+            ), 
+        ),
+    );
+}
+
+
+
+
+//enitity_create
+//$entity = entity_create('d2t_car', array('name' => 'Đàm Trọng'));
+
+//entity_save or save
+//entity_save('d2t_car', $entity); 
+//$entity->save();
+
+//entity_load
+//entity_load('d2t_car');
+
+//entity_delete
+//entity_delete('d2t_car', array(1));

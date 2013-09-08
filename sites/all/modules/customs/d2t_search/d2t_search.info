@@ -1,0 +1,5 @@
+name = "Search Ajax"
+description = "Form search ajax"
+package = "Customs"
+core = "7.x"
+version = "1.0-1"
