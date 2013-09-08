@@ -22,7 +22,6 @@ class D2TCar extends Entity {
 		else{
 			return FALSE;
 		}
-		return $this->manufacturer;
 	}
 
 	public function delete(){
