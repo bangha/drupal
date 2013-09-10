@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * Implements hook_uninstall()
+ */
+function d2t_laptop_uninstall() {
+  drupal_uninstall_schema('d2t_laptop');
+}
+
+/**
+ * Implements hook_schema()
+ */
+function d2t_laptop_schema() {
+  $schema = array();
+  $schema['d2t_laptop'] = array(
+    'description' => 'The table for d2t_laptop',
+    'fields' => array(
+      'lid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 200,
+        'not null' => FALSE,
+      ),
+      'brand' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'os' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'processor' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'ram' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'hdd' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'screen' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'screen' => array(
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => FALSE,
+      ),
+      'created' => array(
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+    ),
+    'primary key' => array('lid'),
+  );
+  return $schema;
+}

@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * Implements hook_help()
+ */
+function d2t_laptop_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#d2t_laptop":
+      return '<p>' . t("Displays links to nodes created on this date") . '</p>';
+      break;
+  }
+}
+
+/**
+ * Implements hook_permission()
+ */
+function d2t_laptop_permission() {
+  return array(
+    'access d2t_laptop content' => array(
+      'title' => t('Access content for the latop module'),
+    )
+  );
+}
+
+/**
+ * Implements hook_entity_info()
+ */
+function d2t_laptop_entity_info(){
+  return array(
+    'd2t_laptop' => array(
+      'label' => t('Laptop Entity'),
+      'entity class' => 'Entity',
+      'controller class' => 'EntityAPIController',
+      'base table' => 'd2t_laptop',
+      'module' => 'd2t_laptop',
+      'entity keys' => array(
+        'id' => 'lid'
+      ),
+      'admin ui' => array(
+        'path' => 'admin/structure/laptop',
+        'controller class' => 'EntityDefaultUIController',
+      ),
+      'access callback' => 'd2t_laptop_access',
+      'label callback' => 'd2t_laptop_label',
+      'uri callback' => 'd2t_laptop_uri',
+    ),
+  );
+}
+
+/**
+ * Implements the access callback
+ */
+function d2t_laptop_access($op, $entity_type, $entity = NULL, $account = NULL){
+  return true;
+}
+
+/**
+ * Implements hook_label()
+ */
+function d2t_laptop_label($entity, $entity_type) {
+  if (isset($entity->is_new) && $entity->is_new) {
+    return true;
+  }
+  return $entity->name;
+}
+
+/**
+ * Implements the uri callback.
+ */
+function d2t_laptop_uri($entity) {
+  return array(
+    'path' => 'laptop/' . $entity->lid,
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function d2t_laptop_menu(){
+  $items['laptop/%d2t_laptop'] = array(
+    'title' => 'Laptop',
+    'page callback' => 'd2t_laptop_view',
+    'page arguments' => array(1),
+    'access arguments' => array('view any d2t_laptop entity'),
+  ); 
+}
+
+function d2t_laptop_view(){}
+/**
+ * Implements hook_form()
+ */
+function d2t_laptop_form($form, &$form_state, $entity, $op, $entity_type){
+  
+  $form['d2t_laptop'] = array(
+      '#type' => 'value',
+      '#value' => $entity
+    );
+  $form['name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Name'),
+    '#default_value' => isset($entity->name) ? $entity->name : '',
+  );
+  $form['brand'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Brand'),
+    '#default_value' => isset($entity->brand) ? $entity->brand: '',
+  );
+  $form['os'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Operating System'),
+    '#default_value' => isset($entity->os) ? $entity->os: '',
+  );
+  $form['processor'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Processor'),
+    '#default_value' => isset($entity->processor) ? $entity->processor: '',
+  );
+  $form['ram'] = array(
+    '#type' => 'textfield',
+    '#title' => t('RAM'),
+    '#default_value' => isset($entity->ram) ? $entity->ram: '',
+  );
+  $form['hdd'] = array(
+    '#type' => 'textfield',
+    '#title' => t('HDD'),
+    '#default_value' => isset($entity->hdd) ? $entity->hdd: '',
+  );
+  $form['screen'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Screen'),
+    '#default_value' => isset($entity->screen) ? $entity->screen: '',
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+  return $form;
+}
+
+/**
+ * Implements hook_submit()
+ */
+function d2t_laptop_form_submit($form, &$form_state){
+  $entity = $form_state['values']['d2t_laptop'];
+  $entity->name = $form_state['values']['name'];
+  $entity->brand = $form_state['values']['brand'];
+  $entity->os = $form_state['values']['os'];
+  $entity->processor = $form_state['values']['processor'];
+  $entity->ram = $form_state['values']['ram'];
+  $entity->hdd = $form_state['values']['hdd'];
+  $entity->screen = $form_state['values']['screen'];
+  entity_save('d2t_laptop', $entity);
+ }

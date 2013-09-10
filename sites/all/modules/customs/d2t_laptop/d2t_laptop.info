@@ -1,0 +1,5 @@
+name = "D2t Laptop"
+description = "D2t Laptop Entity"
+package = "Customs"
+core = "7.x"
+version = "1.0"
