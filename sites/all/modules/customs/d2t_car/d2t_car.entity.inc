@@ -29,13 +29,23 @@ class D2TCar extends Entity {
 	*$test = $obj->delCar();
 	*dvm($test);
 	*/
+
+	function delete() {
+		$deleted = $this->identifier() > 3;
+		//dvm($this->identifier());
+		if ($deleted){
+			parent::delete();
+		}
+	}
+
+/*
 	function delCar(){
 		$count = count(entity_load($this->entityType()));
 		if($count > 3){
 			//$id = $this->identifier();
 			$id = $this->internalIdentifier();
 			$rs = entity_get_controller($this->entityType)->delete(array($id));
-			if($rs = null){
+			if($rs === null){
 				return FALSE;
 			}else{
 				return TRUE;
@@ -45,5 +55,6 @@ class D2TCar extends Entity {
 		else{
 			return FALSE;
 		}
-	}
+}
+ */
 }

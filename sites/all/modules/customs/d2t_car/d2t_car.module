@@ -1,66 +1,174 @@
 <?php
+
 /**
-* Implements hook_help()
-*/
+ * Implements hook_help()
+ */
 function d2t_car_help($path, $arg) {
   switch ($path) {
     case "admin/help#d2t_car":
       return '<p>' . t("Displays links to nodes created on this date") . '</p>';
       break;
   }
-} 
+}
 
 /**
-* Implements hook_permission()
-*/
+ * Implements hook_permission()
+ */
+function d2t_car_permission() {
+  return array(
+    'access d2t_car content' => array(
+      'title' => t('Access content for the car module'),
+    )
+  );
+}
 
-function d2t_car_permission(){
-    return array(
-        'access d2t_car content' => array(
-            'title' => t('Access content for the car module'),
+/**
+ * Implements hook_menu()
+ */
+function d2t_car_menu() {
+  $items['admin/config/content/d2t_car'] = array(
+    'title' => t('Car Entity'),
+    'type' => MENU_NORMAL_ITEM,
+    'description' => t('Car entity'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d2t_car_form'),
+    'access arguments' => array('access adminstration pages'),
+  );
+
+  return $items;
+}
+
+function d2t_car_form($form, &$form_state, $entity, $op, $entity_type) {
+  if ($op == 'add') {
+    $form['d2t_car'] = array(
+      '#type' => 'value',
+      '#value' => $entity
+    );
+    $form['name'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Name Car',
+    );
+    $form['manufacturer'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Manufacturer',
+    );
+    $form['color'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Color',
+    );
+    $form['engine_capacity'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Engine capacity',
+    );
+    $form['gear'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Gear',
+    );
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => 'Save',
+    );
+  }
+  else{
+    $form['d2t_car'] = array(
+      '#type' => 'value',
+      '#value' => $entity
+    );
+    $form['name'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Name Car',
+      '#default_value' => $entity->name,
+    );
+    $form['manufacturer'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Manufacturer',
+      '#default_value' => $entity->manufacturer,
+    );
+    $form['color'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Color',
+      '#default_value' => $entity->color,
+    );
+    $form['engine_capacity'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Engine capacity',
+      '#default_value' => $entity->engine_capacity,
+    );
+    $form['gear'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Gear',
+      '#default_value' => $entity->gear,
+    );
+    $form['submit'] = array(
+      '#type' => 'submit',
+      '#value' => 'Save',
+    );
+  };
+  return $form;  
+}
+
+function d2t_car_form_submit($form, &$form_state){
+  $entity = $form_state['values']['d2t_car'];
+  $entity->name = $form_state['values']['name'];
+  $entity->manufacturer = $form_state['values']['manufacturer'];
+  $entity->engine_capacity = $form_state['values']['engine_capacity'];
+  $entity->gear = $form_state['values']['gear'];
+  entity_save('d2t_cat', $entity);
+ 
+  //entity_save('d2t_cat', $entity);
+    //$entity = $form_state['values']['basic_entity'];
+  //$entity->item_description = $form_state['values']['item_description'];
+  //$entity = entity_example_basic_save($entity);
+}
+
+
+function d2t_car_entity_info() {
+  return array(
+    'd2t_car' => array(
+      'label' => t('Car Entity'),
+      'entity class' => 'D2TCar',
+      'controller class' => 'D2tCarController',
+      'module' => 'd2t_car',
+      'base table' => 'd2t_car',
+      'fieldable' => FALSE,
+      'entity keys' => array(
+        'id' => 'cid',
+        //'name' => 'name'
+      ),
+      'view modes' => array(
+        'full' => array(
+          'label' => 'Full'
         )
-    );
+      ),
+      'uri callback' => 'd2t_car_uri',
+      'admin ui' => array(
+        'path' => 'admin/structure/car',
+        'controller class' => 'EntityDefaultUIController',
+        
+      ),
+      'access callback' => 'd2t_car_access',
+      'label callback' => 'd2t_car_label'
+    ),
+  );
 }
 
-/**
-* Implements hook_menu()
-*/
-
-function d2t_car_menu(){
-    $items['admin/config/content/d2t_car'] = array(
-        'title' => t('Car Entity'),
-        'type'  => MENU_NORMAL_ITEM,
-        'description' => t('Car entity'),
-        'page callback' => 'drupal_get_form',
-        'page arguments' => array('d2t_car_form'),
-        'access arguments' => array('access adminstration pages'),
-    );
-    
-    return $items;
+function d2t_car_uri($entity) {
+  return array(
+    'path' => 'car/' . $entity->cid,
+  );
 }
 
-function d2t_car_form(){}
-
-function d2t_car_entity_info(){
-    return array(
-        'd2t_car' => array(
-            'label'            => t('Car Entity'),
-            'entity class'     => 'D2TCar',
-            'controller class' => 'EntityAPIController',
-            'module'           => 'd2t_car',
-            'base table'       => 'd2t_car',
-            'fieldable'        => FALSE,
-            'entity keys'      => array(
-                'id'    => 'cid',
-                'name' => 'name'
-            ), 
-        ),
-    );
+function d2t_car_label($entity, $entity_type) {
+  if (isset($entity->is_new) && $entity->is_new) {
+    return true;
+  }
+  return $entity->name;
 }
 
 
-
-
+function d2t_car_access($op, $entity_type, $entity = NULL, $account = NULL) {
+  return true;
+}
 //enitity_create
 //$entity = entity_create('d2t_car', array('name' => 'Đàm Trọng'));
 
