@@ -53,7 +53,7 @@ function current_posts_block_info() {
     $query = db_select('node', 'n')
             ->fields('n', array('nid', 'title', 'created'))
             ->condition('status', 1) //Published
-            ->condition('created', array($start_time, $end_time), 'BETWEEN')
+            //->condition('created', array($start_time, $end_time), 'BETWEEN')
             ->orderBy('created', 'DESC'); //Most recent first.
             
             if($display == 'block'){
@@ -73,7 +73,6 @@ function current_posts_block_view($delta = '') {
             $items = array();
             // Iterate over the resultset and format as links
             foreach($result as $node){
-                dvm($node);
                 $items[] = array(
                 'data' => l($node->title, 'node/'. $node->nid)
                 );
@@ -188,7 +187,7 @@ function current_posts_menu(){
         'data' => l($node->title, 'node/' . $node->nid)
         );
     }
-    
+    dvm($items);
     if(empty($items)){
         $page_array['current_posts_arguments'] = array(
             '#title' => t('All posts form the last week'),

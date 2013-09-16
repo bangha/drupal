@@ -36,6 +36,12 @@ function d2t_laptop_entity_info(){
       'entity keys' => array(
         'id' => 'lid'
       ),
+      'view modes' => array(
+        'full' => array(
+          'label' => t('Full content'),
+          'custom settings' => FALSE,
+        ),
+       ),
       'admin ui' => array(
         'path' => 'admin/structure/laptop',
         'controller class' => 'EntityDefaultUIController',
@@ -73,24 +79,84 @@ function d2t_laptop_uri($entity) {
   );
 }
 
+function d2t_laptop_load_multiple($lids = array()) {
+  //dsm(entity_load('d2t_laptop', $lids));
+  return entity_load('d2t_laptop', $lids);
+}
+function d2t_laptop_load($lid = NULL) {
+  $lids = (isset($lid) ? array($lid) : array());
+  $d2t_laptop = d2t_laptop_load_multiple($lids);
+  return $d2t_laptop ? reset($d2t_laptop) : FALSE;
+}
 /**
  * Implements hook_menu().
  */
 function d2t_laptop_menu(){
-  $items['laptop/%d2t_laptop'] = array(
-    'title' => 'Laptop',
-    'page callback' => 'd2t_laptop_view',
+
+  $items['laptop'] = array(
+    'title' => 'List Laptop',
+    'page callback' => 'd2t_laptop_page',
     'page arguments' => array(1),
-    'access arguments' => array('view any d2t_laptop entity'),
-  ); 
+    'access arguments' => array('view laptop'),
+    'type' => MENU_CALLBACK,
+  );
+  $items['laptop/%d2t_laptop'] = array(
+    'title' => 'View Laptop',
+    'page callback' => 'd2t_laptop_page_view',
+    'page arguments' => array(1),
+    'access arguments' => array('view laptop'),
+    'type' => MENU_CALLBACK,
+  );
+  
+  return $items;
+}
+function d2t_laptop_page(){
+  $result = entity_load('d2t_laptop');
+  foreach($result as $laptop){
+    $items[] = array(
+    'data' => l($laptop->name, 'laptop/' . $laptop->lid)
+    );
+  }
+  $page_array['d2t_laptop_arguments'] = array(
+      '#title' => t('All laptop'),
+      '#items' => $items,
+    '#theme' => 'item_list__d2t_laptop',
+  );
+  return $page_array;
+}
+function d2t_laptop_page_view($entity, $view_mode = 'tweaky') {
+
+  $entity_type = 'd2t_laptop';
+  $entity->content = array(
+    '#view_mode' => $view_mode,
+  );
+  field_attach_prepare_view($entity_type, array($entity->lid => $entity),
+    $view_mode);
+
+  entity_prepare_view($entity_type, array($entity->lid => $entity));
+  $entity->content += field_attach_view($entity_type, $entity, $view_mode);
+
+  $entity->content['name'] = array(
+    '#type' => 'item',
+    '#title' => t('Name'),
+    '#markup' => $entity->name,
+  );
+  $entity->content['brand'] = array(
+    '#type' => 'item',
+    '#title' => t('Brand'),
+    '#markup' => $entity->brand,
+  );
+
+  drupal_alter(array('d2t_laptop_page_view', 'entity_view'),
+    $entity->content, $entity_type);
+
+  return $entity->content;
 }
 
-function d2t_laptop_view(){}
 /**
  * Implements hook_form()
  */
 function d2t_laptop_form($form, &$form_state, $entity, $op, $entity_type){
-  
   $form['d2t_laptop'] = array(
       '#type' => 'value',
       '#value' => $entity
@@ -150,4 +216,5 @@ function d2t_laptop_form_submit($form, &$form_state){
   $entity->hdd = $form_state['values']['hdd'];
   $entity->screen = $form_state['values']['screen'];
   entity_save('d2t_laptop', $entity);
+  $form_state['redirect'] = 'laptop/' . $entity->lid;
  }
